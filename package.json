@@ -1,0 +1,53 @@
+{
+  "name": "@cdgmx/opencode-taskmemory",
+  "version": "0.1.0",
+  "description": "Session-scoped markdown file storage tools for OpenCode agents.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "node --experimental-vm-modules ./node_modules/.bin/jest --config jest.config.js",
+    "pack:check": "npm pack --dry-run",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "npm run build && changeset publish",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "opencode",
+    "task-memory",
+    "plugin",
+    "agent",
+    "subagent"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cdgmx/opencode-taskmemory"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@opencode-ai/plugin": "^1.14.41"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.0",
+    "@types/jest": "^29.5.0",
+    "@types/node": "^20.0.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.0",
+    "typescript": "^5.4.0"
+  }
+}
