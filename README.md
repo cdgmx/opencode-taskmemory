@@ -1,51 +1,101 @@
 # @cdgmx/opencode-taskmemory
 
-Session-scoped markdown file storage tools for [OpenCode](https://opencode.ai) agents.
+Session-scoped markdown file storage tools for [OpenCode](https://opencode.ai) agents — packaged as a directly loadable OpenCode plugin.
 
-## Install
+---
+
+## What this package provides
+
+| | |
+|---|---|
+| **Root package** | A ready-to-load OpenCode plugin — add the package name to `opencode.json` and the six tools are available immediately |
+| **`/tools` subpath** | The reusable `createTools(root?)` factory for building your own plugin or custom composition |
+| **Six tools** | `taskMemory_currentSession`, `taskMemory_write`, `taskMemory_append`, `taskMemory_read`, `taskMemory_list`, `taskMemory_deleteMemory` |
+
+---
+
+## Plugin usage (recommended)
+
+### Step 1 — Install
 
 ```bash
 npm install @cdgmx/opencode-taskmemory
 ```
 
-## Usage
+### Step 2 — Register in `opencode.json`
 
-### Default tools
-
-```ts
-import { currentSession, write, append, read, list, deleteMemory } from "@cdgmx/opencode-taskmemory"
+```json
+{
+  "plugin": ["@cdgmx/opencode-taskmemory"]
+}
 ```
 
-Default root precedence:
+OpenCode loads the package as a plugin at startup. All six `taskMemory_*` tools become available to agents immediately — no wrapper file required.
 
-1. explicit `createTools(root)` argument
-2. `OPENCODE_TASKMEMORY_ROOT`
-3. `os.tmpdir()/opencode/task/memory`
+---
 
-### Custom root
+## Library / developer usage
+
+If you are building your own plugin or agent tooling and want to compose the tool definitions directly, import from the `/tools` subpath:
 
 ```ts
-import { createTools } from "@cdgmx/opencode-taskmemory"
+import { createTools, resolveMemoryRoot } from "@cdgmx/opencode-taskmemory/tools"
 
 const tools = createTools("/my/custom/root")
+// or with default root resolution:
+const tools = createTools()
 ```
 
-## Exported tools
+> **Migration note for previous users:** The package root (`@cdgmx/opencode-taskmemory`) is now the plugin entry. Move any direct tool imports to `@cdgmx/opencode-taskmemory/tools`.
+
+---
+
+## Storage root resolution
+
+Precedence (highest to lowest):
+
+1. Explicit argument: `createTools("/my/path")`
+2. Environment variable: `OPENCODE_TASKMEMORY_ROOT`
+3. Default: `os.tmpdir()/opencode/task/memory`
+
+Files are stored at `<root>/<sessionId>/<name>.md`. Session IDs must match the `ses_` prefix pattern returned by OpenCode's runtime context.
+
+---
+
+## Exported API
+
+### Root package (`@cdgmx/opencode-taskmemory`)
 
 | Export | Description |
 |---|---|
-| `currentSession` | Return current session ID and memory directory |
-| `write` | Write a new markdown memory file |
-| `append` | Append to a memory file |
-| `read` | Read a memory file |
-| `list` | List `.md` memory files in a session |
-| `deleteMemory` | Delete a memory file |
-| `createTools(root?)` | Create tool instances bound to a specific root |
-| `resolveMemoryRoot(root?)` | Resolve memory root by precedence |
+| `TaskMemoryPlugin` | Named `Plugin` function — the OpenCode plugin entry |
+| `default` | Default alias of `TaskMemoryPlugin` |
+
+### Tools subpath (`@cdgmx/opencode-taskmemory/tools`)
+
+| Export | Description |
+|---|---|
+| `createTools(root?)` | Create tool instances bound to a specific storage root |
+| `resolveMemoryRoot(root?)` | Resolve storage root by precedence |
+
+### Tool descriptions
+
+| Tool | Description |
+|---|---|
+| `taskMemory_currentSession` | Return current session ID and memory directory |
+| `taskMemory_write` | Write a new markdown memory file (fails if exists unless `overwrite: true`) |
+| `taskMemory_append` | Append to a memory file (creates if missing) |
+| `taskMemory_read` | Read a memory file |
+| `taskMemory_list` | List `.md` memory files in a session |
+| `taskMemory_deleteMemory` | Delete a memory file |
+
+---
 
 ## Local dogfooding
 
-This repo includes `tools/taskMemory.ts` as a source-level bridge for local OpenCode symlink usage from another repo.
+`tools/taskMemory.ts` is a source-level bridge used in this repo itself for local OpenCode symlink usage. It calls `createTools` with a fixed local path so the repo's own agents can use the tools without publishing. It is not part of the public API.
+
+---
 
 ## Development
 

@@ -2,7 +2,8 @@ import { mkdtemp, rm } from "node:fs/promises"
 import { join } from "node:path"
 import { tmpdir } from "node:os"
 import type { ToolContext } from "@opencode-ai/plugin"
-import { createTools, resolveMemoryRoot } from "../src/index.js"
+import { createTools, resolveMemoryRoot } from "../src/tools.js"
+import { TaskMemoryPlugin } from "../src/index.js"
 
 async function makeTempRoot(): Promise<{ root: string; cleanup: () => Promise<void> }> {
   const root = await mkdtemp(join(tmpdir(), "taskmemory-test-"))
@@ -123,5 +124,27 @@ describe("resolveMemoryRoot precedence", () => {
   it("falls back to tmpdir path", () => {
     delete process.env.OPENCODE_TASKMEMORY_ROOT
     expect(resolveMemoryRoot()).toBe(join(tmpdir(), "opencode", "task", "memory"))
+  })
+})
+
+describe("plugin entry smoke", () => {
+  it("TaskMemoryPlugin is a callable function", () => {
+    expect(typeof TaskMemoryPlugin).toBe("function")
+  })
+
+  it("plugin resolves to hooks with all six taskMemory_* tools", async () => {
+    // Cast to satisfy PluginInput shape without a real client — plugin only calls createTools() internally
+    const hooks = await TaskMemoryPlugin({} as Parameters<typeof TaskMemoryPlugin>[0])
+    expect(hooks).toHaveProperty("tool")
+    const toolKeys = Object.keys(hooks.tool ?? {})
+    expect(toolKeys).toEqual(expect.arrayContaining([
+      "taskMemory_currentSession",
+      "taskMemory_write",
+      "taskMemory_append",
+      "taskMemory_read",
+      "taskMemory_list",
+      "taskMemory_deleteMemory",
+    ]))
+    expect(toolKeys).toHaveLength(6)
   })
 })

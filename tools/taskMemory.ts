@@ -1,4 +1,4 @@
-import { createTools } from "../src/index.js"
+import { createTools } from "../src/tools.js"
 
 const tools = createTools("")
 
