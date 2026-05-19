@@ -2,6 +2,8 @@
 
 Session-scoped markdown file storage tools for [OpenCode](https://opencode.ai) agents — packaged as a directly loadable OpenCode plugin.
 
+![alt text](assets/image.png)
+
 ---
 
 ## What this package provides
