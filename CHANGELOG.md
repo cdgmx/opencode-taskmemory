@@ -1,5 +1,11 @@
 # @cdgmx/opencode-taskmemory
 
+## 0.3.0
+
+### Minor Changes
+
+- 058769a: fix root memory
+
 ## 0.2.0
 
 ### Minor Changes
