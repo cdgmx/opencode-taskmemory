@@ -1,6 +1,6 @@
-import { createTools } from "../src/tools.js"
+import { createTools } from "@cdgmx/opencode-taskmemory/tools"
 
-const tools = createTools("")
+const tools = createTools()
 
 export const currentSession = tools.currentSession
 export const write = tools.write

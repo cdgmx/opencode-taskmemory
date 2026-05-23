@@ -95,7 +95,7 @@ Files are stored at `<root>/<sessionId>/<name>.md`. Session IDs must match the `
 
 ## Local dogfooding
 
-`tools/taskMemory.ts` is a source-level bridge used in this repo itself for local OpenCode symlink usage. It calls `createTools` with a fixed local path so the repo's own agents can use the tools without publishing. It is not part of the public API.
+`tools/taskMemory.ts` is a source-level bridge used in this repo itself for local OpenCode symlink usage. It calls `createTools()` with no arguments, so root resolution follows the standard precedence: `OPENCODE_TASKMEMORY_ROOT` env var → `os.tmpdir()/opencode/task/memory`. It is not part of the public API.
 
 ---
 
