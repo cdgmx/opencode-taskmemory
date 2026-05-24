@@ -1,5 +1,11 @@
 # @cdgmx/opencode-taskmemory
 
+## 0.3.1
+
+### Patch Changes
+
+- b99a38e: test
+
 ## 0.3.0
 
 ### Minor Changes
