@@ -1,7 +1,7 @@
 {
   "name": "@cdgmx/opencode-taskmemory",
   "version": "0.3.0",
-  "description": "Session-scoped markdown file storage tools for OpenCode agents.",
+  "description": "Session-scoped markdown file storage plugin for OpenCode agents.",
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.js",
@@ -10,10 +10,6 @@
     ".": {
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
-    },
-    "./tools": {
-      "import": "./dist/tools.js",
-      "types": "./dist/tools.d.ts"
     }
   },
   "files": [

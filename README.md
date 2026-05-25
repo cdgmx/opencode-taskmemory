@@ -1,6 +1,6 @@
 # @cdgmx/opencode-taskmemory
 
-Session-scoped markdown file storage tools for [OpenCode](https://opencode.ai) agents — packaged as a directly loadable OpenCode plugin.
+Session-scoped markdown file storage plugin for [OpenCode](https://opencode.ai) agents — add the package name to `opencode.json` and all six tools are available immediately.
 
 ![alt text](assets/image.png)
 
@@ -10,13 +10,12 @@ Session-scoped markdown file storage tools for [OpenCode](https://opencode.ai) a
 
 | | |
 |---|---|
-| **Root package** | A ready-to-load OpenCode plugin — add the package name to `opencode.json` and the six tools are available immediately |
-| **`/tools` subpath** | The reusable `createTools(root?)` factory for building your own plugin or custom composition |
+| **Root package** | A ready-to-load OpenCode plugin — register in `opencode.json` and the six tools are available immediately |
 | **Six tools** | `taskMemory_currentSession`, `taskMemory_write`, `taskMemory_append`, `taskMemory_read`, `taskMemory_list`, `taskMemory_deleteMemory` |
 
 ---
 
-## Plugin usage (recommended)
+## Plugin usage
 
 ### Step 1 — Install
 
@@ -36,34 +35,6 @@ OpenCode loads the package as a plugin at startup. All six `taskMemory_*` tools 
 
 ---
 
-## Library / developer usage
-
-If you are building your own plugin or agent tooling and want to compose the tool definitions directly, import from the `/tools` subpath:
-
-```ts
-import { createTools, resolveMemoryRoot } from "@cdgmx/opencode-taskmemory/tools"
-
-const tools = createTools("/my/custom/root")
-// or with default root resolution:
-const tools = createTools()
-```
-
-> **Migration note for previous users:** The package root (`@cdgmx/opencode-taskmemory`) is now the plugin entry. Move any direct tool imports to `@cdgmx/opencode-taskmemory/tools`.
-
----
-
-## Storage root resolution
-
-Precedence (highest to lowest):
-
-1. Explicit argument: `createTools("/my/path")`
-2. Environment variable: `OPENCODE_TASKMEMORY_ROOT`
-3. Default: `os.tmpdir()/opencode/task/memory`
-
-Files are stored at `<root>/<sessionId>/<name>.md`. Session IDs must match the `ses_` prefix pattern returned by OpenCode's runtime context.
-
----
-
 ## Exported API
 
 ### Root package (`@cdgmx/opencode-taskmemory`)
@@ -72,13 +43,6 @@ Files are stored at `<root>/<sessionId>/<name>.md`. Session IDs must match the `
 |---|---|
 | `TaskMemoryPlugin` | Named `Plugin` function — the OpenCode plugin entry |
 | `default` | Default alias of `TaskMemoryPlugin` |
-
-### Tools subpath (`@cdgmx/opencode-taskmemory/tools`)
-
-| Export | Description |
-|---|---|
-| `createTools(root?)` | Create tool instances bound to a specific storage root |
-| `resolveMemoryRoot(root?)` | Resolve storage root by precedence |
 
 ### Tool descriptions
 
@@ -93,9 +57,20 @@ Files are stored at `<root>/<sessionId>/<name>.md`. Session IDs must match the `
 
 ---
 
+## Storage root
+
+Files are stored at `<root>/<sessionId>/<name>.md`. The plugin resolves the root automatically:
+
+1. `OPENCODE_TASKMEMORY_ROOT` environment variable
+2. Default: `os.tmpdir()/opencode/task/memory`
+
+Session IDs must match the `ses_` prefix pattern returned by OpenCode's runtime context.
+
+---
+
 ## Local dogfooding
 
-`tools/taskMemory.ts` is a source-level bridge used in this repo itself for local OpenCode symlink usage. It calls `createTools()` with no arguments, so root resolution follows the standard precedence: `OPENCODE_TASKMEMORY_ROOT` env var → `os.tmpdir()/opencode/task/memory`. It is not part of the public API.
+Repo-local dogfooding can point the `plugin` entry in `opencode.json` directly at `src/index.ts` using a `file://` URL. This is **not public API** and is only valid for local development inside this repository.
 
 ---
 
