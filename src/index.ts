@@ -1,4 +1,5 @@
 import type { Plugin } from "@opencode-ai/plugin"
+import { resolveMemoryRoot } from "./root.js"
 import { createTools } from "./tools.js"
 
 /**
